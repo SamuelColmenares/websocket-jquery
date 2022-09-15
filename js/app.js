@@ -15,12 +15,26 @@ socket.onmessage = event => {
     const json = JSON.parse(event.data);
 
     if (json.action === 'partial' || json.action === 'insert') {
-        const filtrado = json.data.find(row => row.side === 'Buy');
-        console.log('mensaje recibido filtrado', filtrado);
-        if (filtrado) {
-            $('.valores-moneda').text(`USD$ ${filtrado.price}`);
-            $('.label-moneda').text(`Cryptomoneda: ${filtrado.symbol}`);
+        console.log('json.data :>> ', json.data);
+        let precioMayor = 0;
+        let moneda = '';
+        let tieneBuy = false;
+        json.data.forEach(row => {
+            if (row.side === 'Buy') {
+                precioMayor = row.price > precioMayor ? row.price : precioMayor;
+                tieneBuy = true;
+            }
+
+            moneda = row.symbol;
+        });
+
+        console.log('mensaje recibido filtrado', precioMayor);
+        if (tieneBuy) {
+            $('.valores-moneda').text(`USD$ ${precioMayor}`);
+            $('.label-moneda').text(`Cryptomoneda: ${moneda}`);
         }
+
+
     }
 
 
